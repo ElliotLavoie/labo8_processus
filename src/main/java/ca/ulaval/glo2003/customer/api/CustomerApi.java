@@ -1,9 +1,6 @@
 package ca.ulaval.glo2003.customer.api;
 
-import ca.ulaval.glo2003.customer.logic.CustomerFactory;
-import ca.ulaval.glo2003.customer.logic.CustomerPersistence;
-import ca.ulaval.glo2003.customer.logic.Email;
-import ca.ulaval.glo2003.customer.logic.EmailType;
+import ca.ulaval.glo2003.customer.logic.*;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -37,7 +34,10 @@ public class CustomerApi {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createCustomer(CustomerRequest request) {
         // Défi : pouvez-vous nettoyer ça?
-        var emails = request.emails.stream().collect(Collectors.toMap(dto -> EmailType.parse(dto.type()), dto -> new Email(dto.value()), (existing, replacement) -> existing));
+        var emails = request.emails.stream().collect(Collectors.toMap(
+                dto -> EmailType.parse(dto.type()),
+                dto -> new Email(dto.value()),
+                (existing, replacement) -> existing));
         var customer = customerFactory.create(
                 request.name,
                 LocalDate.parse(request.birthDate, DateTimeFormatter.ISO_LOCAL_DATE),

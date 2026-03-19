@@ -2,8 +2,9 @@ package ca.ulaval.glo2003;
 
 import ca.ulaval.glo2003.customer.api.CustomerApi;
 import ca.ulaval.glo2003.customer.api.CustomerMapper;
-import ca.ulaval.glo2003.customer.logic.CustomerFactory;
-import ca.ulaval.glo2003.customer.logic.CustomerPersistence;
+import ca.ulaval.glo2003.customer.infra.mongo.CustomerPersistenceMongo;
+import ca.ulaval.glo2003.customer.logic.*;
+import ca.ulaval.glo2003.customer.shared.infra.DatastoreProvider;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -14,7 +15,8 @@ public class Main {
     public static final String BASE_URI = "http://0.0.0.0:8080/";
 
     public static HttpServer startServer() {
-        var customerApi = new CustomerApi(new CustomerFactory(), new CustomerPersistence(), new CustomerMapper());
+        CustomerPersistence customerPersistence = new CustomerPersistenceMongo(new DatastoreProvider().provide());
+        var customerApi = new CustomerApi(new CustomerFactory(), customerPersistence, new CustomerMapper());
 
         final ResourceConfig rc = new ResourceConfig()
                 .register(customerApi);
